@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
  
 /**
  * This class uses a GUI to display information to, and obtain information from, the user
@@ -7,15 +8,32 @@ import java.util.ArrayList;
  * @author (Jesse Nelson) 
  * @version (11/9/2012 : Windows 8(x64) Java 1.7 U9)
  */
-public class UserGUI implements UserInterface {
+public class UserGUI implements UserInterface  {
+    private String userInput;
+    private List<Choice> choices;
+    private List<Characteristic> characteristics;
+    
+    public UserGUI() {
+        this.choices = new ArrayList<Choice>();
+        this.characteristics = new ArrayList<Characteristic>();
+        this.userInput = "";
+    }
+    
     /**
      * Uses a GUI to get all of the choices being considered by the user
      * 
      * @return list of choices 
      */
     public List<Choice> getChoices() {
-        List<Choice> choices = new ArrayList<Choice>();
-        return choices;
+        this.userInput = JOptionPane.showInputDialog("What is one of your choices?" +
+                                     "\nType d if you are finished entering choices.");
+                                     
+        if(this.userInput.toLowerCase().charAt(0) == 'd') {
+            return this.choices;
+        } 
+        
+        this.choices.add(new Choice(userInput));
+        return getChoices();  
     }
     
     /**
@@ -24,8 +42,15 @@ public class UserGUI implements UserInterface {
      * @return list of characteristics
      */
     public List<Characteristic> getCharacteristics() {
-        List<Characteristic> characteristics = new ArrayList<Characteristic>();
-        return characteristics;
+        this.userInput = JOptionPane.showInputDialog("What is one of the characteristics?" +
+                                     "\nType d if you are finished entering characteristics.");
+                                     
+        if(this.userInput.toLowerCase().charAt(0) == 'd') {
+            return this.characteristics;
+        } 
+        
+        this.characteristics.add(new Characteristic(userInput));
+        return getCharacteristics();
     }
     
     /**
@@ -35,8 +60,14 @@ public class UserGUI implements UserInterface {
      * @param allChar A list of all the characteristics
      * @param defaultValue The default ranking
      */
-    public void getCharacteristicRankings(ArrayList<Characteristic> allChar, int defaultValue) {
-        
+    public void getCharacteristicRankings(List<Characteristic> allChar, int defaultValue) {
+        for(int i = 1; i < allChar.size(); i++) {
+            userInput = JOptionPane.showInputDialog("If " + allChar.get(0).getCharacteristicName() +
+                                " has an importance of " + defaultValue + ".\nWhat importance does " + 
+                                 allChar.get(i).getCharacteristicName() + " have?");
+           
+            allChar.get(i).setRank(Integer.parseInt(userInput)); 
+        }
     }
     
     /**
@@ -50,8 +81,28 @@ public class UserGUI implements UserInterface {
      * @return a 2D array containing the ranking of each choice related to 
      *         each characteristic
      */
-    public double [][] getCrossRanking(ArrayList<Choice> choices, ArrayList<Characteristic> characteristics, int defaultValue) {
-        return new double [5][7];
+    public double [][] getCrossRanking(List<Choice> choices,
+                                       List<Characteristic> characteristics, 
+                                       int defaultValue) {
+                                           
+        double [][] crossRankings = new double [characteristics.size()][choices.size()];
+        
+        for(int i = 0; i < characteristics.size(); i++) {
+            int sum = 0;
+            for(int j = 1; j < choices.size(); j++) { 
+                userInput = JOptionPane.showInputDialog("Considering " + 
+                                            characteristics.get(i).getCharacteristicName() +
+                                                 " only, if " + choices.get(0).getName()  + 
+                                                  " is ranked " + defaultValue +
+                                                  " what would you rank " +
+                                                  choices.get(j).getName() + "?");
+                sum += Integer.parseInt(userInput);
+                crossRankings[i][j] = Integer.parseInt(userInput);
+            }
+            crossRankings = DecisionAssistant.normalizeCrossRankings(crossRankings, sum, i);
+        }
+        
+        return crossRankings;    
     }
     
     /**
@@ -59,6 +110,13 @@ public class UserGUI implements UserInterface {
      * 
      * @param choices A list of all the choices
      */
-    public void showResults(ArrayList<Choice> choices) {
+    public void showResults(List<Choice> choices) {
+        String results = "";
+        for(int i = 0; i < choices.size(); i++ ) {
+            results += choices.get(i).getName() + " = " + 
+                       choices.get(i).getFinalScore() + "\n";  
+        }
+        
+        JOptionPane.showMessageDialog(null, results);
     }
 }

@@ -23,7 +23,7 @@ public interface UserInterface {
     /**
      * Ranks the charactersitics importance in relation to eachother
      */
-    void getCharacteristicRankings(ArrayList<Characteristic> allChar, 
+    void getCharacteristicRankings(List<Characteristic> allChar, 
                                    int defaultValue);
     
     /**
@@ -37,8 +37,8 @@ public interface UserInterface {
      * @return a 2D array containing the ranking of each choice related to 
      * each characteristic
      */
-    double [][] getCrossRanking(ArrayList<Choice> choices,
-                                ArrayList<Characteristic> characteristics,
+    double [][] getCrossRanking(List<Choice> choices,
+                                List<Characteristic> characteristics,
                                 int defaultValue);
     
     /**
@@ -46,6 +46,6 @@ public interface UserInterface {
      * 
      * @param choices A list of all the choices
      */
-    void showResults(ArrayList<Choice> choices);
+    void showResults(List<Choice> choices);
     
 }
