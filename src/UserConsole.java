@@ -9,11 +9,29 @@ import java.util.Scanner;
  * @version (11/9/2012 : Windows 8(x64) Java 1.7 U9)
  */
 public class UserConsole implements UserInterface {
+    /**
+     * Input obtained from user
+     */
     private String userInput;
+    
+    /**
+     * List to hold Users choices as list is being built
+     */
     private List<Choice> choices;
+    
+    /**
+     * List to hold characteristics as list is being built
+     */
     private List<Characteristic> characteristics;
+    
+    /**
+     * Scanner to read input from default input device
+     */
     private Scanner console;
     
+    /**
+     * Initialize instance variables
+     */
     public UserConsole() {
         this.choices = new ArrayList<Choice>();
         this.characteristics = new ArrayList<Characteristic>();
@@ -65,6 +83,7 @@ public class UserConsole implements UserInterface {
      * @param defaultValue The default ranking
      */
     public void getCharacteristicRankings(List<Characteristic> allChar, int defaultValue) {
+        allChar.get(0).setRank(defaultValue);
         for(int i = 1; i < allChar.size(); i++) {
             System.out.println("If " + allChar.get(0).getCharacteristicName() + " has an importance of " +
                                 defaultValue + ".\nWhat importance does " + 
@@ -88,20 +107,32 @@ public class UserConsole implements UserInterface {
     public double [][] getCrossRanking(List<Choice> choices,
                                 List<Characteristic> characteristics, 
                                 int defaultValue) {
-        double [][] crossRankings = new double [characteristics.size()][choices.size()];
+        double [][] crossRankings = new double [choices.size()][characteristics.size()];
         
         for(int i = 0; i < characteristics.size(); i++) {
             int sum = 0;
             for(int j = 0; j < choices.size(); j++) { 
-                System.out.println("Considering " + characteristics.get(i).getCharacteristicName() + 
+                
+                if(j == 0) {
+                    crossRankings[j][i] = defaultValue;
+                    sum += defaultValue;
+                } 
+                
+                else {
+                    System.out.println("Considering " + characteristics.get(i).getCharacteristicName() + 
                                     " only, if " + choices.get(0).getName() + " is ranked " + defaultValue + 
                                     " what would you rank " + choices.get(j).getName() + "?");
-                userInput = console.nextLine(); 
-                sum += Integer.parseInt(userInput);
-                crossRankings[i][j] = Integer.parseInt(userInput);
+                    userInput = console.nextLine(); 
+                    sum += Integer.parseInt(userInput);
+                    crossRankings[j][i] = Integer.parseInt(userInput);
+                }
+                
             } 
+            
             crossRankings = normalizeCrossRankings(crossRankings, sum, i);
+            
         }
+        
         return crossRankings;        
     }
     
@@ -118,10 +149,20 @@ public class UserConsole implements UserInterface {
            
     }
     
-    private double [][] normalizeCrossRankings(double [][] rankings, int sum, int row) {
+    /**
+     * Normalizes the cross rankings
+     * 
+     * @param rankings Cross rankings of attributes and choices
+     * @param sum Sum of all rankings for a single attribute
+     * @param column Current column being 
+     * 
+     * @return 2D array of normalized rankings
+     */
+    private double [][] normalizeCrossRankings(double [][] rankings, int sum, int column) {
         for(int i = 0; i < rankings.length; i++) {
-            rankings[row][i] /= sum; 
+            rankings[i][column] /= sum; 
         }
+        
         return rankings;
     }
 }
