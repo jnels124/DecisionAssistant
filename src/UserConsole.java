@@ -100,7 +100,7 @@ public class UserConsole implements UserInterface {
                 sum += Integer.parseInt(userInput);
                 crossRankings[i][j] = Integer.parseInt(userInput);
             } 
-            crossRankings = DecisionAssistant.normalizeCrossRankings(crossRankings, sum, i);
+            crossRankings = normalizeCrossRankings(crossRankings, sum, i);
         }
         return crossRankings;        
     }
@@ -116,5 +116,12 @@ public class UserConsole implements UserInterface {
             System.out.println(choices.get(i).getName() + " = " + choices.get(i).getFinalScore()) ;    
         }
            
+    }
+    
+    private double [][] normalizeCrossRankings(double [][] rankings, int sum, int row) {
+        for(int i = 0; i < rankings.length; i++) {
+            rankings[row][i] /= sum; 
+        }
+        return rankings;
     }
 }

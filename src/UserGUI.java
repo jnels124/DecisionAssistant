@@ -61,6 +61,7 @@ public class UserGUI implements UserInterface  {
      * @param defaultValue The default ranking
      */
     public void getCharacteristicRankings(List<Characteristic> allChar, int defaultValue) {
+        allChar.get(0).setRank(defaultValue);
         for(int i = 1; i < allChar.size(); i++) {
             userInput = JOptionPane.showInputDialog("If " + allChar.get(0).getCharacteristicName() +
                                 " has an importance of " + defaultValue + ".\nWhat importance does " + 
@@ -85,21 +86,47 @@ public class UserGUI implements UserInterface  {
                                        List<Characteristic> characteristics, 
                                        int defaultValue) {
                                            
-        double [][] crossRankings = new double [characteristics.size()][choices.size()];
+        //double [][] crossRankings = new double [characteristics.size()][choices.size()];
+        double [][] crossRankings = new double [choices.size()][characteristics.size()];
+        
+        System.out.println(choices.size());
+        /*for(int i = 0; i < choices.size(); i++) {
+            for(int j = 0; j < characteristics.size(); j++) {
+                
+            }
+        }*/
         
         for(int i = 0; i < characteristics.size(); i++) {
             int sum = 0;
-            for(int j = 1; j < choices.size(); j++) { 
-                userInput = JOptionPane.showInputDialog("Considering " + 
+            for(int j = 0; j < choices.size(); j++) { 
+                if(j == 0) {
+                    crossRankings[j][i] = 10;
+                    sum += defaultValue;
+                }
+                else {
+                    userInput = JOptionPane.showInputDialog("Considering " + 
                                             characteristics.get(i).getCharacteristicName() +
                                                  " only, if " + choices.get(0).getName()  + 
                                                   " is ranked " + defaultValue +
                                                   " what would you rank " +
                                                   choices.get(j).getName() + "?");
-                sum += Integer.parseInt(userInput);
-                crossRankings[i][j] = Integer.parseInt(userInput);
+                    sum += Integer.parseInt(userInput);
+                    crossRankings[j][i] = Integer.parseInt(userInput);
+                    System.out.print(crossRankings[j][i]);
+                }
             }
-            crossRankings = DecisionAssistant.normalizeCrossRankings(crossRankings, sum, i);
+            for(int k = 0; k < crossRankings.length; k++) {
+            for(int p = 0; p < crossRankings[0].length; p++) {
+                
+                System.out.print("before" + crossRankings[k][p]);
+            }
+        }
+            //System.out.print(crossRanking[j][i]);
+            /*System.out.println("row length" + crossRankings[0].length);
+            System.out.println("column length" + crossRankings.length);*/
+            crossRankings = normalizeCrossRankings(crossRankings, sum, i);
+            
+            //System.out.print("afternormalization"+crossRankings);
         }
         
         return crossRankings;    
@@ -118,5 +145,23 @@ public class UserGUI implements UserInterface  {
         }
         
         JOptionPane.showMessageDialog(null, results);
+    }
+    
+    private double [][] normalizeCrossRankings(double [][] rankings, int sum, int column) {
+        //rankings[row][0] = 10 / sum;
+        for(int i = 0; i < rankings.length; i++) {
+            System.out.println("column length" + rankings[0].length);
+            System.out.println("column " + column + " i " + i);
+            System.out.println("row length" + rankings.length);
+            rankings[i][column] /= sum; 
+            //System.out.print("afternormalization" + rankings[i][column]);
+        }
+        for(int i = 0; i < rankings.length; i++) {
+            for(int j = 0; j < rankings[0].length; j++) {
+                
+                System.out.println("afternormalization" + rankings[i][j]);
+            }
+        }
+        return rankings;
     }
 }

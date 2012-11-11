@@ -39,11 +39,13 @@ public class DecisionAssistant {
        double largestValue = 0;
        double value = 0.0;
        double [] tmpValues = new double[choices.size()];
+       
        for(int i = 0; i < choices.size(); i++) {
+           value = 0.0;
            for(int j = 0; j < characteristics.size(); j++) {
-               value += (crossRankings[j][i] * characteristics.get(j).getRank());
+               value += (crossRankings[i][j] * characteristics.get(j).getRank());
            }
-           
+           System.out.println("value " + value);
            if(value > largestValue) {
                largestValue = value;
            }
@@ -51,17 +53,18 @@ public class DecisionAssistant {
            tmpValues[i] = value;
        }
        
+       for(int i = 0; i< tmpValues.length; i++) {
+           System.out.println("tmpvalue " + tmpValues[i]);
+       }
+       
+       
+       
        for(int i = 0; i < tmpValues.length; i++) {
            choices.get(i).setFinalScore((int)((tmpValues[i] / largestValue) * 100));
        }
        
     }
     
-    public static double [][] normalizeCrossRankings(double [][] rankings, int sum, int row) {
-        for(int i = 0; i < rankings.length; i++) {
-            rankings[row][i] /= sum; 
-        }
-        return rankings;
-    }
+    
 
 }
