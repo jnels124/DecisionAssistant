@@ -1,3 +1,4 @@
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -86,7 +87,7 @@ public class DecisionAssistant {
            tmpValues[i] = value;
        }
        
-       // set final score for each co
+       // calculates and sets final score for each choice
        for(int i = 0; i < tmpValues.length; i++) {
            choices.get(i).setFinalScore((int)((tmpValues[i] / largestValue) * 100));
        }

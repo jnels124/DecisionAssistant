@@ -9,64 +9,78 @@ import javax.swing.JOptionPane;
  * @version (11/9/2012 : Windows 8(x64) Java 1.7 U9)
  */
 public class UserGUI implements UserInterface  {
+
     /**
      * Input obtained from user
      */
     private String userInput;
     
     /**
-     * List to hold Users choices as list is being built
-     */
-    private List<Choice> choices;
-    
-    /**
-     * List to hold characteristics as list is being built
-     */
-    private List<Characteristic> characteristics;
-    
-    /**
      * Initialize instance variables
      */
     public UserGUI() {
-        this.choices = new ArrayList<Choice>();
-        this.characteristics = new ArrayList<Characteristic>();
         this.userInput = "";
     }
     
     /**
      * Uses a GUI to get all of the choices being considered by the user
      * 
+     * --Runs an infinite loop until ending conditions are met
+     * 
      * @return list of choices 
      */
     public List<Choice> getChoices() {
-        this.userInput = JOptionPane.showInputDialog("What is one of your choices?" +
-                                     "\nType d if you are finished entering choices.");
-                                     
-        if(this.userInput.toLowerCase().charAt(0) == 'd') {
-            return this.choices;
-        } 
+        List<Choice> choices = new ArrayList<Choice> ();
         
-        this.choices.add(new Choice(userInput));
-        
-        return getChoices();  
+        do {
+            this.userInput = JOptionPane.showInputDialog
+            ("What is one of your choices? \nType d if you are finished entering choices.");
+            
+            if(this.userInput == null || this.userInput.length() == 0) {
+                this.userInput = verifyNotEmptyOrNull
+                ("What is one of your choices? \nType d if you are finished entering choices.",
+                this.userInput);
+            }
+            
+            if(this.userInput.toLowerCase().charAt(0) == 'd' && this.userInput.length() == 1) {
+               return choices; 
+            }
+            
+            choices.add(new Choice(this.userInput));
+            
+        } while(true); // Gets choices until user is finished
+      
     }
     
     /**
      * Uses a GUI to get all of the characteristics related to the choices
+     * --Runs an infinite loop until ending conditions are met
      * 
      * @return list of characteristics
      */
     public List<Characteristic> getCharacteristics() {
-        this.userInput = JOptionPane.showInputDialog("What is one of the characteristics?" +
-                                     "\nType d if you are finished entering characteristics.");
-                                     
-        if(this.userInput.toLowerCase().charAt(0) == 'd') {
-            return this.characteristics;
-        } 
-        
-        this.characteristics.add(new Characteristic(userInput));
-        
-        return getCharacteristics();
+       List<Characteristic> characteristics = new ArrayList<Characteristic>();
+       
+       do {
+           this.userInput = JOptionPane.showInputDialog
+            ("What is one of the characteristics?" +
+             "\nType d if you are finished entering characteristics.");
+            
+           if(this.userInput == null || this.userInput.length() == 0) {
+                this.userInput = verifyNotEmptyOrNull
+                ("What is one of the characteristics?" +
+                  "\nType d if you are finished entering characteristics.", 
+                   this.userInput);
+            }
+            
+           if(this.userInput.toLowerCase().charAt(0) == 'd' && this.userInput.length() == 1) {
+               return characteristics; 
+            }
+            
+           characteristics.add(new Characteristic(this.userInput));
+            
+       } while(true); // Gets choices until user is finished
+                          
     }
     
     /**
@@ -83,6 +97,21 @@ public class UserGUI implements UserInterface  {
             userInput = JOptionPane.showInputDialog("If " + allChar.get(0).getCharacteristicName() +
                                 " has an importance of " + defaultValue + ".\nWhat importance does " + 
                                  allChar.get(i).getCharacteristicName() + " have?");
+                                 
+            if(this.userInput == null || this.userInput.length() == 0){
+                this.userInput = verifyNotEmptyOrNull
+                ("If " + allChar.get(0).getCharacteristicName() +
+                  " has an importance of " + defaultValue + ".\nWhat importance does " + 
+                  allChar.get(i).getCharacteristicName() + " have?", this.userInput);
+            }
+                    
+            if(!Character.isDigit(this.userInput.charAt(0))) {
+                this.userInput = verifyStringIsNumber
+                ("If " + allChar.get(0).getCharacteristicName() +
+                  " has an importance of " + defaultValue + ".\nWhat importance does " + 
+                  allChar.get(i).getCharacteristicName() + " have?", this.userInput);         
+            }
+            
             allChar.get(i).setRank(Integer.parseInt(userInput)); 
         }
     }
@@ -107,19 +136,31 @@ public class UserGUI implements UserInterface  {
         for(int i = 0; i < characteristics.size(); i++) {
             int sum = 0;
             for(int j = 0; j < choices.size(); j++) { 
-                
                 if(j == 0) {
                     crossRankings[j][i] = defaultValue;
                     sum += defaultValue;
                 }
                 
                 else {
-                    userInput = JOptionPane.showInputDialog("Considering " + 
-                                            characteristics.get(i).getCharacteristicName() +
-                                                 " only, if " + choices.get(0).getName()  + 
-                                                  " is ranked " + defaultValue +
-                                                  " what would you rank " +
-                                                  choices.get(j).getName() + "?");
+                    this.userInput = JOptionPane.showInputDialog(
+                    "Considering " + characteristics.get(i).getCharacteristicName() +
+                    " only, if " + choices.get(0).getName()  + " is ranked " + defaultValue +
+                    " what would you rank " +  choices.get(j).getName() + "?");                                                               
+                                                  
+                    if(this.userInput == null || this.userInput.length() == 0){
+                        this.userInput = verifyNotEmptyOrNull
+                        ("Considering " +  characteristics.get(i).getCharacteristicName() +
+                         " only, if " + choices.get(0).getName()  + " is ranked " + defaultValue +
+                         " what would you rank " + choices.get(j).getName() + "?", this.userInput); 
+                    }
+                    
+                    if(!Character.isDigit(this.userInput.charAt(0))) {      
+                        this.userInput = verifyStringIsNumber
+                        ("Considering " +  characteristics.get(i).getCharacteristicName() +
+                         " only, if " + choices.get(0).getName()  + " is ranked " + defaultValue +
+                         " what would you rank " + choices.get(j).getName() + "?", this.userInput);  
+                    }
+                    
                     sum += Integer.parseInt(userInput);
                     crossRankings[j][i] = Integer.parseInt(userInput);
                 }
@@ -130,6 +171,7 @@ public class UserGUI implements UserInterface  {
         }
         
         return crossRankings;    
+        
     }
     
     /**
@@ -139,14 +181,12 @@ public class UserGUI implements UserInterface  {
      */
     public void showResults(List<Choice> choices) {
         String results = "";
-        
         for(int i = 0; i < choices.size(); i++ ) {
             results += choices.get(i).getName() + " = " + 
                        choices.get(i).getFinalScore() + "\n";  
         }
         
-        JOptionPane.showMessageDialog(null, results);
-        
+        JOptionPane.showMessageDialog(null, "The final results are: \n" + results);
     }
     
     /**
@@ -165,5 +205,63 @@ public class UserGUI implements UserInterface  {
         }
        
         return rankings;
+        
+    }
+    
+    /**
+     * Verifies that the user has proivded usable input
+     * 
+     * @param msg Message to display
+     * @param userInput current bad value
+     * 
+     * @return usable input
+     */
+    private String verifyNotEmptyOrNull(String msg, String userInput) {
+        do {
+            int n = JOptionPane.showConfirmDialog( 
+                            null,  "Would you like to quit the current program?", 
+                            "Quit", JOptionPane.YES_NO_OPTION);
+                            
+            if (n == JOptionPane.NO_OPTION) {
+                userInput = JOptionPane.showInputDialog(msg);                                         
+            } 
+            
+            else {
+                System.exit(0);                                                     
+            }        
+                     
+        } while (userInput == null || userInput.length() == 0);
+        
+        return userInput;
+    
+    }
+    
+    /**
+     * Verifies that the user has proivded usable input as a digit
+     * 
+     * @param msg Message to display
+     * @param userInput current bad value
+     * 
+     * @return usable input
+     */
+    private String verifyStringIsNumber(String msg, String userInput) {
+        do {
+            int n = JOptionPane.showConfirmDialog( 
+                            null,  "Would you like to quit the current program?", 
+                            "Quit", JOptionPane.YES_NO_OPTION);
+                            
+            if (n == JOptionPane.NO_OPTION) {
+                userInput = JOptionPane.showInputDialog(msg);                                         
+            } 
+            
+            else {
+                System.exit(0);                                                     
+            }        
+                     
+        } while (userInput == null || userInput.length() == 0 ||
+                 !Character.isDigit(userInput.charAt(0)));
+        
+        return userInput;
+    
     }
 }

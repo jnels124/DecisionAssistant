@@ -28,6 +28,9 @@ public class Characteristic {
      * @param characteristic Characteristic name
      */
     public Characteristic(String characteristic) {
+        if(characteristic == null) {
+            throw new NullPointerException("Characteristic can't take a null parameter");
+        }
         this.characteristicName = characteristic;
         this.rank = DEFAULT_RANK;
     }

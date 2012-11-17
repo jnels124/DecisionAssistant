@@ -26,6 +26,9 @@ public class Choice {
      * Initializes instance variables
      */
     public Choice(String choice) {
+        if(choice == null) {
+            throw new NullPointerException("Choice can't take a null parameter");
+        }
         this.choice = choice;
         this.finalScore = DEFAULT_SCORE;
     }
